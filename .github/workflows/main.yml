@@ -22,7 +22,7 @@ jobs:
           curl -fsSl https://tailscale.com/install.sh | sh
           sudo tailscale up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --hostname=
           tsIP-$(tailscale ip -4 | head -n 1)
-          echo "TAILSCALE_IP=$stIP" >> $GITHUB_ENV
+          echo "TAILSCALE_IP=$tsIP" >> $GITHUB_ENV
           echo "✅ TAILSCALE IP: $tsIP"
 
       - name: Verify SSH Access
@@ -37,6 +37,5 @@ jobs:
             echo "[$(date)] VPS running..."
             sleep 300
           done
-          
     
           
