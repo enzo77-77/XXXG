@@ -1,16 +1,41 @@
-name: premium
-
+name: vps
 on:
-  workflow_dispatch: # Allows manual triggering from the Actions tab
-
+  workflow_dispatch:
 jobs:
-  build:
+  secure-vps:
     runs-on: ubuntu-latest
+    timeout-minutes: 360
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Install & Configure SSH
+        run: |
+          sudo apt update -y
+          sudo apt install -y openssh-server
+          sudo systemctl enable ssh
+          echo "root:admin@999" | sudo chpasswd
+          echo "PermitRootLogin yes" | sudo tee -a /etc/ssh/sshd_config
+          sudo service ssh restart
+          echo "✅ SSH user: root | pass:admin@999"
+          
+      - name: Install Tailscale
+        run: |
+          curl -fsSl https://tailscale.com/install.sh | sh
+          sudo tailscale up --authkey=${{ secrets.TAILSCLAE_AUTH_KEY }} --hostname=
+          tsIP-$(tialsclae ip -4 | head -n 1)
+          echo "TAILSCALE_IP=$stIP" >> $GITHUB_ENV
+          echo "✅ TAILSCALE IP: $tsIP"
 
-      - name: Start VPS Session (tmate)
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: false
+      - name: Verify SSH Access
+        run:  |
+          echo "Tailscale VPS ready!"
+          echo "IP: $env:TAILSCALE_IP"
+          echo "User: root"
+          echo "Pass: admin@999"
+      - name: Keep VPS Alive
+        run: |
+          while true; do
+            echo "[$(date)] VPS running..."
+            sleep 300
+          done
+          
+    
+          
