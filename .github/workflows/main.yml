@@ -15,15 +15,15 @@ jobs:
           echo "root:admin@999" | sudo chpasswd
           echo "PermitRootLogin yes" | sudo tee -a /etc/ssh/sshd_config
           sudo service ssh restart
-          echo "✅ SSH user: root | pass:admin@999"
+          echo "✅ SSH user: root | pass: admin@999"
           
       - name: Install Tailscale
         run: |
-          curl -fsSl https://tailscale.com/install.sh | sh
+          curl -fsSL https://tailscale.com/install.sh | sh
           sudo tailscale up --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} --hostname=
           tsIP-$(tailscale ip -4 | head -n 1)
           echo "TAILSCALE_IP=$tsIP" >> $GITHUB_ENV
-          echo "✅ TAILSCALE IP: $tsIP"
+          echo "✅ Tailscale IP: $tsIP"
 
       - name: Verify SSH Access
         run:  |
